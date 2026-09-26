@@ -74,7 +74,7 @@ function curtirBark() {
   return (
     <View style={styles.container}>
 
-      <Text style={styles.logo}>🐶</Text>
+      <Text style={styles.logo}></Text>
 
       <Text style={styles.title}>
         GiveMeABark

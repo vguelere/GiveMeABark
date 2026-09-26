@@ -1,0 +1,11 @@
+@GiveMeABarkAPI_HostAddress = http://localhost:5237
+
+GET {{GiveMeABarkAPI_HostAddress}}/openapi/v1.json
+Accept: application/json
+
+###
+
+GET {{GiveMeABarkAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

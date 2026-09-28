@@ -1,10 +1,8 @@
+import { Image } from 'expo-image';
 import { useState } from 'react';
 import {
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+  Pressable, StyleSheet, Text,
+  TextInput, View
 } from 'react-native';
 
 const barks: { [key: string]: string } = {
@@ -74,10 +72,14 @@ function curtirBark() {
   return (
     <View style={styles.container}>
 
-      <Text style={styles.logo}></Text>
+        <Image
+        source={require('@/assets/images/toby.gif')}
+        style={styles.gif}
+        autoplay
+        />
 
       <Text style={styles.title}>
-        GiveMeABark
+        GiveMeaBark
       </Text>
 
       <Text style={styles.subtitle}>
@@ -167,10 +169,15 @@ function curtirBark() {
 }
 
 const styles = StyleSheet.create({
+  gif: {
+    width: 120,
+    height: 120,
+    marginBottom: 10,
+  },
 
   container: {
     flex: 1,
-    backgroundColor: '#FFF8EE',
+    backgroundColor: '#FFF',
     alignItems: 'center',
     paddingTop: 80,
     paddingHorizontal: 25,

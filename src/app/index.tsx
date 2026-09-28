@@ -1,306 +1,356 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import {
+  FlatList,
   Pressable,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 
-const barks: { [key: string]: string } = {
-  abelha:
-    'Pequena abelha, grande viajante, dança entre as flores e carrega o segredo da primavera.',
-
-  cachorro:
-    'O cachorro corre atrás do vento, sem saber onde vai chegar, mas feliz por estar correndo.',
-
-  lua:
-    'A lua observa tudo em silêncio, iluminando os caminhos de quem ainda procura seu destino.',
-
-  mar:
-    'O mar guarda histórias que ninguém contou e leva para longe aquilo que ninguém conseguiu dizer.',
+type Bark = {
+  id: number;
+  nome: string;
+  username: string;
+  avatar: string;
+  frase: string;
+  curtidas: number;
+  data: string;
+  tag: string;
 };
 
-export default function HomeScreen() {
-  const [palavra, setPalavra] = useState('');
-  const [bark, setBark] = useState('');
-
-  // Histórico dos Barks curtidos
-  const [historico, setHistorico] = useState<
+const barks: Bark[] = [
   {
-    frase: string;
-    data: string;
-    hora: string;
-  }[]
->([]);
+    id: 1,
+    nome: 'Fernanda',
+    username: '@ferzinha',
+    avatar: 'F',
+    frase:
+      'Às vezes, o que a gente precisa não é de mais tempo, mas de menos pessoas.',
+    curtidas: 412,
+    data: '24/09/2026 às 19:12',
+    tag: 'vida',
+  },
 
-  function gerarBark() {
-    const palavraBusca = palavra.toLowerCase().trim();
+  {
+    id: 2,
+    nome: 'Rafael',
+    username: '@rafael',
+    avatar: 'R',
+    frase:
+      'O cachorro corre atrás do vento, sem saber onde vai chegar, mas feliz por estar correndo.',
+    curtidas: 298,
+    data: '24/09/2026 às 18:40',
+    tag: 'cachorro',
+  },
 
-    if (barks[palavraBusca]) {
-      setBark(barks[palavraBusca]);
-    } else {
-      setBark(
-        `🐶 Ainda não tenho um Bark para "${palavra}".`
-      );
-    }
+  {
+    id: 3,
+    nome: 'Mariana',
+    username: '@marianal',
+    avatar: 'M',
+    frase:
+      'A lua observa tudo em silêncio, iluminando os caminhos de quem ainda procura seu destino.',
+    curtidas: 231,
+    data: '24/09/2026 às 21:24',
+    tag: 'lua',
+  },
+
+  {
+    id: 4,
+    nome: 'João',
+    username: '@joaofer',
+    avatar: 'J',
+    frase:
+      'Pequena abelha, grande viajante, dança entre as flores e carrega o segredo da primavera.',
+    curtidas: 184,
+    data: '24/09/2026 às 14:12',
+    tag: 'abelha',
+  },
+
+  {
+    id: 5,
+    nome: 'Camila',
+    username: '@camila',
+    avatar: 'C',
+    frase:
+      'O mar guarda histórias que ninguém contou e leva para longe aquilo que ninguém conseguiu dizer.',
+    curtidas: 156,
+    data: '24/09/2026 às 11:03',
+    tag: 'mar',
+  },
+];
+
+export default function HomeScreen() {
+  const [curtidos, setCurtidos] = useState<number[]>([]);
+
+  function curtirBark(id: number) {
+    setCurtidos((estadoAtual) => {
+      if (estadoAtual.includes(id)) {
+        return estadoAtual.filter((item) => item !== id);
+      }
+
+      return [...estadoAtual, id];
+    });
   }
 
-function curtirBark() {
-  if (bark === '') {
-    return;
-  }
+  function renderBark({ item }: { item: Bark }) {
+    const curtido = curtidos.includes(item.id);
 
-  const agora = new Date();
+    return (
+      <View style={styles.bark}>
 
-  const novoBark = {
-    frase: bark,
-    data: agora.toLocaleDateString('pt-BR'),
-    hora: agora.toLocaleTimeString('pt-BR', {
-      hour: '2-digit',
-      minute: '2-digit',
-    }),
-  };
+        {/* CABEÇALHO */}
+        <View style={styles.header}>
 
-  setHistorico([...historico, novoBark]);
+          <View style={styles.userInfo}>
 
-  setBark('');
-}
-
-  function descartarBark() {
-    setBark('');
-  }
-
-  return (
-    <View style={styles.container}>
-
-      <Text style={styles.logo}></Text>
-
-      <Text style={styles.title}>
-        GiveMeABark
-      </Text>
-
-      <Text style={styles.subtitle}>
-        Digite uma palavra e receba um Bark.
-      </Text>
-
-      <TextInput
-        style={styles.input}
-        placeholder="Ex: abelha"
-        placeholderTextColor="#999"
-        value={palavra}
-        onChangeText={setPalavra}
-      />
-
-      <Pressable
-        style={styles.button}
-        onPress={gerarBark}
-      >
-        <Text style={styles.buttonText}>
-          BARK!
-        </Text>
-      </Pressable>
-
-      {bark !== '' && (
-        <View style={styles.barkBox}>
-
-          <Text style={styles.barkTitle}>
-            🐶 Seu Bark
-          </Text>
-
-          <Text style={styles.barkText}>
-            "{bark}"
-          </Text>
-
-          <View style={styles.actions}>
-
-            <Pressable
-              style={styles.likeButton}
-              onPress={curtirBark}
-            >
-              <Text style={styles.actionText}>
-                ❤️ Curtir
+            <View style={styles.avatar}>
+              <Text style={styles.avatarText}>
+                {item.avatar}
               </Text>
-            </Pressable>
+            </View>
+
+            <View>
+              <Text style={styles.name}>
+                {item.nome}
+              </Text>
+
+              <Text style={styles.username}>
+                {item.username}
+              </Text>
+            </View>
+
+          </View>
+
+          <Pressable>
+            <Ionicons
+              name="ellipsis-horizontal"
+              size={20}
+              color="#777"
+            />
+          </Pressable>
+
+        </View>
+
+
+        {/* TEXTO */}
+        <Text style={styles.quote}>
+          "{item.frase}"
+        </Text>
+
+
+        {/* RODAPÉ */}
+        <View style={styles.footer}>
+
+          <View>
+            <Text style={styles.date}>
+              {item.data}
+            </Text>
+          </View>
+
+          <View style={styles.footerRight}>
+
+            <View style={styles.tag}>
+              <Text style={styles.tagText}>
+                {item.tag}
+              </Text>
+            </View>
 
             <Pressable
-              style={styles.discardButton}
-              onPress={descartarBark}
+              style={styles.like}
+              onPress={() => curtirBark(item.id)}
             >
-              <Text style={styles.actionText}>
-                ❌
+              <Ionicons
+                name={curtido ? 'heart' : 'heart-outline'}
+                size={19}
+                color={curtido ? '#E91E63' : '#777'}
+              />
+
+              <Text
+                style={[
+                  styles.likeCount,
+                  curtido && styles.likedCount,
+                ]}
+              >
+                {item.curtidas + (curtido ? 1 : 0)}
               </Text>
             </Pressable>
 
           </View>
 
         </View>
-      )}
 
-      {historico.length > 0 && (
-        <View style={styles.history}>
+      </View>
+    );
+  }
 
-          <Text style={styles.historyTitle}>
-            ❤️ Meu histórico
-          </Text>
+  return (
+    <View style={styles.container}>
 
-          {historico.map((item, index) => (
-            <View
-              key={index}
-              style={styles.historyItem}
-            >
-              <Text style={styles.historyText}>
-                "{item.frase}"
-              </Text>
+      {/* TOPO */}
+      <View style={styles.topBar}>
+        <Text style={styles.logo}>
+          GiveMeABark
+        </Text>
 
-              <Text style={styles.historyDate}>
-                {item.data} às {item.hora}
-              </Text>
-            </View>
-          ))}
+        <Pressable>
+          <Ionicons
+            name="notifications-outline"
+            size={25}
+            color="#222"
+          />
+        </Pressable>
+      </View>
 
-        </View>
-      )}
+
+      {/* FEED */}
+      <FlatList
+        data={barks}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={renderBark}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.feed}
+      />
 
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-
   container: {
     flex: 1,
     backgroundColor: '#FFF8EE',
+  },
+
+  topBar: {
+    height: 70,
+    backgroundColor: '#FFFFFF',
+
+    flexDirection: 'row',
     alignItems: 'center',
-    paddingTop: 80,
-    paddingHorizontal: 25,
+    justifyContent: 'space-between',
+
+    paddingHorizontal: 20,
+
+    borderBottomWidth: 1,
+    borderBottomColor: '#EEEEEE',
   },
 
   logo: {
-    fontSize: 60,
-    marginBottom: 5,
-  },
-
-  title: {
-    fontSize: 36,
-    fontWeight: 'bold',
+    fontSize: 24,
+    fontWeight: '800',
     color: '#222',
   },
 
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginTop: 8,
-    marginBottom: 30,
-    textAlign: 'center',
+  feed: {
+    paddingTop: 8,
+    paddingBottom: 20,
   },
 
-  input: {
-    width: '100%',
-    height: 55,
+  bark: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 15,
-    paddingHorizontal: 20,
-    fontSize: 18,
-    borderWidth: 1,
-    borderColor: '#DDD',
+
+    paddingHorizontal: 16,
+    paddingVertical: 15,
+
+    borderBottomWidth: 1,
+    borderBottomColor: '#EEEEEE',
   },
 
-  button: {
-    width: '100%',
-    height: 55,
-    backgroundColor: '#222',
-    borderRadius: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 15,
-  },
-
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-
-  barkBox: {
-    width: '100%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 25,
-    marginTop: 30,
-    borderWidth: 1,
-    borderColor: '#E5E5E5',
-  },
-
-  barkTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 15,
-  },
-
-  barkText: {
-    fontSize: 21,
-    lineHeight: 32,
-    color: '#333',
-  },
-
-  actions: {
+  header: {
     flexDirection: 'row',
-    gap: 10,
-    marginTop: 25,
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
 
-  likeButton: {
-    flex: 1,
-    height: 50,
-    backgroundColor: '#222',
-    borderRadius: 12,
+  userInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  avatar: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+
+    backgroundColor: '#E8E8E8',
+
     alignItems: 'center',
     justifyContent: 'center',
+
+    marginRight: 10,
   },
 
-  discardButton: {
-    width: 55,
-    height: 50,
-    backgroundColor: '#EEEEEE',
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
+  avatarText: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: '#555',
   },
 
-  actionText: {
-    color: '#FFFFFF',
+  name: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#222',
+  },
+
+  username: {
+    fontSize: 12,
+    color: '#999',
+    marginTop: 2,
+  },
+
+  quote: {
     fontSize: 16,
-    fontWeight: 'bold',
-  },
-
-  history: {
-    width: '100%',
-    marginTop: 30,
-  },
-
-  historyTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-
-  historyItem: {
-    backgroundColor: '#FFFFFF',
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 8,
-  },
-
-  historyText: {
-    fontSize: 16,
+    lineHeight: 23,
     color: '#333',
+
+    marginTop: 12,
+    marginBottom: 12,
   },
 
-historyDate: {
-  fontSize: 12,
-  color: '#999',
-  marginTop: 8,
-},
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
 
+  date: {
+    fontSize: 11,
+    color: '#AAA',
+  },
+
+  footerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  tag: {
+    backgroundColor: '#F1F1F1',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 12,
+    marginRight: 12,
+  },
+
+  tagText: {
+    fontSize: 11,
+    color: '#777',
+  },
+
+  like: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  likeCount: {
+    fontSize: 13,
+    color: '#777',
+    marginLeft: 4,
+  },
+
+  likedCount: {
+    color: '#E91E63',
+    fontWeight: '600',
+  },
 });
